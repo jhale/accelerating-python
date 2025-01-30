@@ -24,7 +24,7 @@ Processing Units (TPUs).
 
 ## Syllabus
 
-### Session 1: Introduction to Python Acceleration Tools
+### Session 1: Introduction to Python acceleration tools
 
 This course will equip candidates to optimize performance critical numerical
 computations with modern Python acceleration techniques.
