@@ -6,7 +6,7 @@ This set of tutorials provides a brief introduction to methods for accelerating
 Python. This set of tutorials was presented at the first MATHCODA Annual
 Training Workshop held in Luxembourg in early 2025.
 
-### Installation
+## Installation
 
 To install the required components for the tutorial:
 
@@ -22,7 +22,7 @@ The notebooks also run on [Google
 Colaboratory](https://colab.research.google.com) using the provided Tensor
 Processing Units (TPUs).
 
-### Syllabus
+## Syllabus
 
 ### Session 1: Introduction to Python Acceleration Tools
 
@@ -45,7 +45,8 @@ By the end of the course, participants will:
 
 **Exercise:**
 
-* Benchmark a simple Python function (e.g., array sum, matrix multiplication) to establish a performance baseline.
+* Benchmark a simple Python function (e.g., array sum, matrix multiplication)
+  to establish a performance baseline.
 
 ### Session 2: Accelerating Code with Numba
 
@@ -57,7 +58,8 @@ By the end of the course, participants will:
 
 **Hands-On Exercise:**
 
-* Optimize a computationally intensive Python function (e.g., Mandelbrot set generation or numerical integration) using Numba.
+* Optimize a computationally intensive Python function (e.g., Mandelbrot set
+  generation or numerical integration) using Numba.
 
 ### Session 3: JAX for GPU/TPU Acceleration
 
@@ -70,9 +72,10 @@ By the end of the course, participants will:
 
 **Exercise:**
 
-* Optimize a computationally intensive Python function (e.g., Mandelbrot set generation or numerical integration) using JAX.
+* Optimize a computationally intensive Python function (e.g., Mandelbrot set
+  generation or numerical integration) using JAX.
 
-### Funding
+## Funding
 
 This research was funded in whole, or in part, by the Luxembourg National
 Research Fund (FNR), grant reference PRIDE/21/16747448/MATHCODA.
