@@ -48,7 +48,7 @@ By the end of the course, participants will:
 * Benchmark a simple Python function (e.g., array sum, matrix multiplication)
   to establish a performance baseline.
 
-### Session 2: Accelerating code with Numba
+### Session 2: Acceleration with Numba
 
 **Topics Covered:**
 
@@ -61,7 +61,7 @@ By the end of the course, participants will:
 * Optimize a computationally intensive Python function (e.g., Mandelbrot set
   generation or numerical integration) using Numba.
 
-### Session 3: JAX for automatic differentiation and acceleration
+### Session 3: Acceleration and differentiation with JAX
 
 **Topics Covered:**
 
