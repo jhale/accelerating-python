@@ -66,8 +66,8 @@ Numpy will call the BLAS Level 3 GEMM routine when you call the high-level
 import numpy as np
 rng = np.random.default_rng()
 
-A = np.array(rng.random((400, 1000)), order="C")
-B = np.array(rng.random((1000, 700)), order="F")
+A = np.array(rng.random((256, 256)), order="C")
+B = np.array(rng.random((256, 256)), order="F")
 
 %timeit C_dot = np.dot(A, B)
 ```
@@ -95,10 +95,11 @@ tensors (matrices) with two or more dimensions.
 
 Consider a matrix $\mathbf{a} \in \mathbb{R}^{n \times m}$ with $n \times m$
 entries $a_{ij}$. In the computer's memory the entries must be stored as a flat
-array $\left\lbrace b_1, b_2, \ldots, b_{n \times m} \right\rbrace$.
+array $\mathbf{b}$ with $n \times m$ entries $\left\lbrace b_1, b_2, \ldots,
+b_{n \times m} \right\rbrace$.
 
-So, we must have a map between the entries of the two-dimensional matrix
-$\mathbf{a}$ and the entries in memory $\mathbf{b}$.
+So interpret the entries of $\mathbf{a}$ as entries of $\mathbf{b}$ we need a
+map between the two.
 
 The two logical ways to do this are *row-major* and *column-major* ordering.
 For row-major ordering, which is used by default in Numpy and C:
@@ -123,8 +124,8 @@ Cmglee - CC BY-SA 4.0,
 ```
 
 When writing the matrix-matrix multiplication it is important for performance
-to iterate over the entries of $\mathbf{A}$ and $\mathbf{B}$ linearly in
-memory.
+to iterate over the entries of $\mathbf{A}$ and $\mathbf{B}$ *contiguously*,
+that is, the order they are stored in memory.
 
 ```
 for i from 0 to m - 1:         // Iterate over rows of A
@@ -167,11 +168,94 @@ def matrix_multiply_loops(A, B):
     C = np.zeros((m, p))
 
     for i in range(m):  # Iterate over rows of A
-        for j in range(p):  # Iterate over columns of B
-            for k in range(n):  # Iterate over common dimension
+        for k in range(n):  # Iterate over common dimension
+            for j in range(p):  # Iterate over columns of B
                 C[i, j] += A[i, k] * B[k, j]
 
     return C
 
-C_loop = matrix_multiply_loops(A, B)
+%timeit C_loop = matrix_multiply_loops(A, B)
+```
+
+On my computer this implementation is 4 orders of magnitude slower than the
+BLAS-provided version. The main (although not only) reasons for this is that
+Python:
+
+- is an interpreted language, which means code is executed line by line, rather
+  than being transformed/compiled to machine code before execution.
+- is dynamically typed, which means types are determined and checked at
+  runtime.
+
+This adds massive overheads. Using numpy gets around Python's limitations by
+immediately dispatching `np.dot(A, B)` to a compiled BLAS routine, typically
+written in C, Fortran or even assembly.
+
+## Accelerating with numba
+
+Numba can just-in-time compile most Python code into highly optimised machine
+code. Technically, it transforms Python code to LLVM assembly code which can
+represent all high-level languages cleanly - highly optimised compilers for C,
+C++, Fortran and Rust already exist targetting LLVM. The LLVM compiler then
+transforms LLVM to machine code.
+
+Using `numba` is relatively straighforward. We can just-in-time compile our
+function using the `@jit` decorator:
+
+```{code-cell}
+import numba
+
+@numba.jit
+def matrix_multiply_loops_jit(A, B):
+    m, n = A.shape
+    n2, p = B.shape
+    
+    if n != n2:
+        raise ValueError("Inner matrix dimensions must agree.")
+
+    C = np.zeros((m, p))
+
+    for i in range(m):
+        for k in range(n):
+            for j in range(p):
+                C[i, j] += A[i, k] * B[k, j]
+
+    return C
+
+C_jit = matrix_multiply_loops_jit(A, B)
+assert np.allclose(C_jit, C_dot) 
+%timeit C_jit = matrix_multiply_loops_jit(A, B)
+```
+
+On my system this is around three times faster than the highly optimised macOS
+BLAS - this is not bad, given this is far from an optimal implementation.
+
+### Further optimisations
+
+Numba can compile nearly all Python code - however, if it cannot 
+
+### Optional: Blocked implementation
+
+```{code-block}
+@numba.jit
+def matrix_multiply_block(A, B, block_size=64)
+    M, K = A.shape
+    K, N = B.shape
+    C = np.zeros((M, N))
+
+    # Split large problem into blocks
+    for ii in range(0, M, block_size):
+        for jj in range(0, N, block_size):
+            for kk in range(0, K, block_size):
+                
+                # Compute the submatrix product for the current block
+                for i in range(ii, min(ii + block_size, M)):
+                    for k in range(kk, min(kk + block_size, K)):
+                        for j in range(jj, min(jj + block_size, N)):
+                            C[i, j] += A[i, k] * B[k, j]
+
+    return C
+
+C_block = matrix_multiply_block(A, B)
+assert np.allclose(C_block, C_dot) 
+%timeit C_block = matrix_multiply_block(A, B)
 ```

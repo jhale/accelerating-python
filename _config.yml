@@ -5,6 +5,7 @@ title: Accelerating Python
 author: Jack S. Hale
 logo: mathcoda.png
 exclude_patterns: ["_build", "accelerating-python-venv"]
+copyright: "2025"
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
@@ -36,3 +37,6 @@ sphinx:
       .py:
         - jupytext.reads
         - fmt: py
+
+execute:
+  timeout: 60
