@@ -29,3 +29,10 @@ html:
 
 launch_buttons:
   colab_url: "https://colab.research.google.com"
+
+sphinx:
+  config:
+    nb_custom_formats:
+      .py:
+        - jupytext.reads
+        - fmt: py
