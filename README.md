@@ -3,8 +3,10 @@
 ## Introduction
 
 This set of tutorials provides a brief introduction to methods for accelerating
-Python. This set of tutorials was presented at the first MATHCODA Annual
-Training Workshop held in Luxembourg in early 2025.
+Python and is aimed at first year graduate students and PhDs. 
+
+This material was presented at the first MATHCODA Annual Training Workshop held
+in Luxembourg in early 2025.
 
 ## Installation
 

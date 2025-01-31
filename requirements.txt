@@ -2,3 +2,4 @@ jax
 matplotlib
 numba
 numpy
+scipy
