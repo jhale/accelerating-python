@@ -164,7 +164,7 @@ lead to Newton's method converging in a single step.
 
 ```{code-cell}
 theta = jnp.array([0.0, 0.0])
-steps = 3
+steps = 10
 
 for _ in range(steps):
     df_x_theta = df_x(theta)

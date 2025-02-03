@@ -39,4 +39,4 @@ sphinx:
         - fmt: py
 
 execute:
-  timeout: 60
+  timeout: 180
