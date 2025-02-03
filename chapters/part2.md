@@ -326,7 +326,7 @@ Numba IR:
 
 ```{code-cell}
 :tags: ["scroll-output"]
-matrix_multiply_loops_jit.inspect_types(signature=matrix_multiply_loops_jit.signatures[0])
+print(matrix_multiply_loops_jit.inspect_types(signature=matrix_multiply_loops_jit.signatures[0]))
 ```
 
 LLVM:
@@ -340,7 +340,7 @@ Assembly:
 
 ```{code-cell}
 :tags: ["scroll-output"]
-matrix_multiply_loops_jit.inspect_asm(signature=matrix_multiply_loops_jit.signatures[0])
+print(matrix_multiply_loops_jit.inspect_asm(signature=matrix_multiply_loops_jit.signatures[0]))
 ```
 
 ### Exercises
@@ -348,12 +348,31 @@ matrix_multiply_loops_jit.inspect_asm(signature=matrix_multiply_loops_jit.signat
 1. Run an experiment where you increase the size of the square matrices passed
    to `A@B` and `matrix_multiply_loops_jit` in a geometric sequence starting at
    4 -- you should be able to go up to around 1024. Plot the results using
-   `matplotlib`. `%timeit -o` will place the
+   `matplotlib`. `%timeit -o` will place the timings into a variable.
+
+```{code-cell}
+result = %timeit -o matrix_multiply_loops_jit(A, B)
+result.average
+```
+
+You will need to execute the function inside a loop and store the results in
+arrays.
 
 ```
-timing = %timeit -o C_loop = matrix_multiply_loops(A, B)
-print(timing.average)
+ns = np.geomspace(...)
+timings1 = []
+timings2 = []
+for n in np.geomspace(...):
+    # Your code
+    pass
 ```
 
 2. For a fixed sized matrices of reasonable size, try passing combinations of
    different orderings to `matrix_multiply_loops`. What do you observe?
+
+
+### References and further information
+
+- (The Numba documentation)[https://numba.pydata.org/numba-doc/dev/index.html]
+- (Extensions to CUDA)[https://tbetcke.github.io/hpc_lecture_notes/gpu_introduction.html]
+
