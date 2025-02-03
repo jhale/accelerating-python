@@ -17,11 +17,9 @@ CPU, GPU, TPU etc.
 
 Perhaps most interestingly, JAX includes automatic differentiation capabilities
 that allow it to derive gradients of (nearly) arbitrary numerical Python
-programs.
-
-Although JAX is strongly marketed towards machine learning researchers, it is
-actually useful in any field of science where gradient-based numerical
-algorithms are in use, i.e. everywhere.
+programs. This makes it a very powerful tool in any field of science where
+gradient-based numerical algorithms are in use, i.e. everywhere, to
+fit/train/calibrate highly complex models.
 
 ## JAX stands in for `numpy`
 
@@ -60,26 +58,122 @@ use JAX's automatic differentiation to derive the necessary gradients.
 
 ### Implementation
 
-```{code-block}
+```{code-cell}
 import jax.numpy as jnp
-import numpy as np
 
-
-def log_likelihood(x, mu, variance):
+def f(theta, x):
+    mu = theta[0]
+    variance = jnp.exp(theta[1])
     n = x.shape[0]
-    return (1.0/(2.0*variance))*np.sum(x - mu)**2 + (n/2.0)*jnp.log(variance) + (n/2.0)*jnp.log(2.0*pi) 
+    log_likelihood = -jnp.sum((x - mu)**2)/(2.0 * variance) - 0.5*n*jnp.log(2 * jnp.pi * variance)
+    return -log_likelihood
 ```
 
 We have defined the log-likelihood as a function over three parameters. We
-would now like to generate and fix the likelihood on a particular realisation
-of the data `x`. This can 
+would now like to  fix the likelihood on a particular realisation of the data
+`x`. This fixing can be done via partial evaluation. 
 
-```{code-block}
-mu = 1.0
-variance = 1.0
-x = np.random.normal(loc=mean, variance=variance, size=100)
+```{code-cell}
+import numpy as np
+
+mu = 0.5
+variance = 2.0
+scale = np.sqrt(2.0)
+x = np.random.normal(loc=mu, scale=scale, size=100)
 
 from jax.tree_util import Partial
-log_likelihood_x = Partial(log_likelihood, x)
-print(log_likelihood_x(3.0, 2.0))
+f_x = Partial(f, x=x)
+f_x(jnp.array([3.0, 2.0]))
 ```
+
+:::{note}
+One of the peculiarities of JAX is that its transformations can only work on
+functions that are *functionally pure*: all input data must be passed through
+the function parameters, and all results must be returned through function
+results. Furthermore, a pure function will always return the same result if
+called with the same inputs. This notion is quite natural and even preferred
+for mathematicians, but can require some careful thought when converting more
+traditional imperative algorithms which use global state.
+
+Here are some examples of disallowed behaviour.
+
+```{code-block}
+g = 0.
+def impure_uses_globals(x):
+  return x + g
+
+def modifies_globals(x):
+  g = x + g
+```
+
+JAX does not enforce functional purity, it is up to you!
+
+For further information and examples, see the [JAX
+documentation](https://jax.readthedocs.io/en/latest/notebooks/Common_Gotchas_in_JAX.html#pure-functions).
+:::
+
+### Taking the gradient
+
+We can take the gradient of a scalar-valued function by passing it to
+`jax.jacfwd`. This function calculates the gradient using forward-mode
+automatic differentiation - we will return to this notion later.
+
+```{code-cell}
+import jax
+
+df_x = jax.jacfwd(f_x)
+df_x(jnp.array([3.0, 2.0]))
+```
+
+### Optimising via gradient descent
+
+We will now find the minimum using gradient descent. We implement the algorithm
+in pure Python, and call through to the JAX generated routines.
+
+```{code-cell}
+theta = jnp.array([0.0, 0.0])
+steps = 100
+step_size = 0.01
+
+for _ in range(steps):
+    df_x_theta = df_x(theta)
+    theta -= step_size * df_x_theta
+
+print(f"Optimal mu: {theta[0]} ({np.mean(x)})")
+print(f"Optimal variance: {jnp.exp(theta[1])} ({np.var(x)})")
+```
+
+### Optimising via Newton's method
+
+JAX's transformations can be stacked to produce higher-order derivatives. Here
+we will apply the forward-mode differentiation twice to produce a function that
+can compute the Hessian of $f$.
+
+```{code-cell}
+ddf_x = jax.jacfwd(jax.jacfwd(f_x))
+ddf_x(jnp.array([3.0, 2.0]))
+```
+
+With the Hessian function we can implement a Newton's method.
+
+:::{note}
+If we were optimising for only the unknown mean $\mu$ and the variance
+$\sigma^2$ was fixed, the function $f$ would be quadratic in $\mu$ - this would
+lead to Newton's method converging in a single step.
+:::
+
+```{code-cell}
+theta = jnp.array([0.0, 0.0])
+steps = 3
+
+for _ in range(steps):
+    df_x_theta = df_x(theta)
+    ddf_x_theta = ddf_x(theta)
+
+    # Solve for the Newton step
+    delta_theta = np.linalg.solve(ddf_x_theta, df_x_theta)
+
+    theta -= delta_theta
+
+print(f"Optimal mu: {theta[0]} ({np.mean(x)})")
+print(f"Optimal variance: {jnp.exp(theta[1])} ({np.var(x)})")
