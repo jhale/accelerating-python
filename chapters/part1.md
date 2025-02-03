@@ -24,15 +24,12 @@ By Karoly Lorentey - originally posted to Flickr as Punched cards for programmin
 * And that was the prominent mode of interacting with computers until the
   1960s. 
 
-:::{figure} punchcard2
+:::{figure} punchcard2.jpg
 By Pete Birkinshaw from Manchester, UK - Used Punchcard, CC BY 2.0, https://commons.wikimedia.org/w/index.php?curid=49758093
 :::
 
 * As computers have become more powerful we have demanded that they do more
   complex tasks, and faster.
-
-* 
-
 
 ### Hardware is changing fast
 
