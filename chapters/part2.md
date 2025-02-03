@@ -12,18 +12,24 @@ jupyter:
 # Session 2: Acceleration with Numba
 
 Numba is a *just-in-time* compiler for a subset of Python code. It can take
-relatively standard numerical Python programs and compile them into optimised
+relatively standard numerical Python functions and compile them into optimised
 low-level machine code.
 
 Numba is particularly useful for accelerating numerical algorithms written
-using classical imperative techniques, i.e. for loops over arrays of data.
-Standard Python (not shown) and numpy-based for loops do not provide
-reasonable performance for this type of algorithm. 
+using classical techniques, i.e. for loops over arrays of data. Standard Python
+(not shown) and numpy-based for loops do not provide reasonable performance for
+this type of algorithm. This makes numba a good tool for re-writing intensive
+parts of Python programs without ever leaving Python.
 
 :::{note}
 Numba can generate code for CPU targets via LLVM, and also CUDA-compatible GPUs
-via the `numba-cuda` package. Recent work on `numba-enzyme` brings automatic
-differentiation capabilities to Numba and also composability with JAX.
+via the `numba-cuda` package. Not that targetting CUDA typically requires
+substantial changes to the standard Python code, unlike the CPU target.
+:::
+
+:::{note}
+Recent work on `numba-enzyme` brings automatic differentiation capabilities to
+Numba and also composability with JAX, which we will see in Part 3.
 :::
 
 ## Matrix-matrix multiplication
@@ -193,13 +199,16 @@ written in C, Fortran or even assembly.
 ## Accelerating with numba
 
 Numba can just-in-time compile most Python code into highly optimised machine
-code. Technically, it transforms Python code to LLVM assembly code which can
-represent all high-level languages cleanly - highly optimised compilers for C,
-C++, Fortran and Rust already exist targetting LLVM. The LLVM compiler then
-transforms LLVM to machine code.
+code. It is particularly effective compiling code with 'tight loops' like the
+matrix matrix multiplcation we've just seen. Numba compiles in a sequence of
+steps, where it transforms Python code to the Numba intermediate
+representation, and then it transforms this into LLVM assembly code which can
+represent all high-level languages cleanly. The LLVM compiler then transforms
+LLVM to machine code.
 
-Using `numba` is relatively straighforward. We can just-in-time compile our
-function using the `@jit` decorator:
+Although the underlying transformations are complex, using `numba` is
+relatively straighforward. We just-in-time compile our function by applying the
+`@jit` decorator:
 
 ```{code-cell}
 import numba
@@ -221,41 +230,130 @@ def matrix_multiply_loops_jit(A, B):
 
     return C
 
+# 'Warm up' - calling the function once starts Numba's JIT process.
 C_jit = matrix_multiply_loops_jit(A, B)
 assert np.allclose(C_jit, C_dot) 
 %timeit C_jit = matrix_multiply_loops_jit(A, B)
 ```
 
 On my system this is around three times faster than the highly optimised macOS
-BLAS - this is not bad, given this is far from an optimal implementation.
+BLAS - this is not bad at all, given this is far from an optimal
+implementation, which require the use of more complex techniques such as
+blocking, parallelisation and explicit use of special CPU instructions.
 
 ### Further optimisations
 
-Numba can compile nearly all Python code - however, if it cannot 
+#### `nopython` mode
 
-### Optional: Blocked implementation
+In its default mode `@jit` Numba can compile an extensive subset of Python
+code. With `@jit(nopython=False)` Numba can compile almost *all* Python code.
+But this comes at a cost -- Numba will call back into the Python intepreter
+when it finds Python code that it cannot translate. My anecdotal experience is
+that `@jit(nopython=False)` rarely provides better performance than pure
+Python.
 
-```{code-block}
-@numba.jit
-def matrix_multiply_block(A, B, block_size=64)
-    M, K = A.shape
-    K, N = B.shape
-    C = np.zeros((M, N))
+:::{note}
+In versions of Numba prior to 0.59 it was necessary to explicitly use
+`@jit(nopython=True)` or equivalently `@njit` - this is no longer the case, and
+just `@jit` is recommended and sufficient.
+:::
 
-    # Split large problem into blocks
-    for ii in range(0, M, block_size):
-        for jj in range(0, N, block_size):
-            for kk in range(0, K, block_size):
-                
-                # Compute the submatrix product for the current block
-                for i in range(ii, min(ii + block_size, M)):
-                    for k in range(kk, min(kk + block_size, K)):
-                        for j in range(jj, min(jj + block_size, N)):
-                            C[i, j] += A[i, k] * B[k, j]
+#### `fastmath` mode
 
-    return C
+LLVM produces IEEE754 compliant floating point arithmetic operations by
+default. IEEE754 is strict and generally produces good results if you use
+reasonable algorithms designed for stability and accuracy, but relaxing these
+rules can lead to better performance. Enabling `fastmath` gives LLVM the
+opportunity to ignore IEEE754 specification and produce faster code, but be
+aware it can lead to subtle numerical issues.
 
-C_block = matrix_multiply_block(A, B)
-assert np.allclose(C_block, C_dot) 
-%timeit C_block = matrix_multiply_block(A, B)
+One optimisation included with `fastmath` is turning off associative math. This
+allows the compiler to re-associate operands in a series of floating point
+operations.
+
+$$
+f(a, b, c) = a + b + c
+$$
+In real arithmetic, any ordering of the operations in `f` is mathematically
+equivalent.
+
+However, in floating point arithmetic, if we know that `a` is likely to be very
+large, and `b` very small, and `c` moderately sized, we might choose to write
+the function as:
+```{code-cell}
+@numba.jit()
+def f(a, b, c):
+    return (a + b) + c
 ```
+With `fastmath`, LLVM could decide to re-arrange this internally to:
+```{code-cell}
+@numba.jit()
+def f_fast(a, b, c):
+    return a + (b + c)
+```
+
+```{code-cell}
+a = np.array([1e9])
+b = np.array([-1e9])
+c = np.array([0.1])
+
+print(f"f: {f(a, b, c)[0]:.12f}")
+print(f"f_fast: {f_fast(a, b, c)[0]:.12f}")
+```
+
+My advice is to always develop code without `fastmath` and only turn it on
+after thoroughly testing for correctness and performance. 
+
+#### `parallel` mode
+
+Setting `@jit(parallel=True)` allows Numba to attempt the automatic
+parallelisation of functions.
+
+#### Advanced: Signatures and inspecting generated assembly
+
+When calling a function decorated with `@jit`, numba will inspect the arguments
+to the function and compile a specialised version for those arguments. We can
+view the *specialisations* generated by Numba using:
+
+```{code-cell}
+matrix_multiply_loops_jit.signatures
+```
+
+It is possible to inspect the transformations that numba produces from Python,
+to Numba IR, to LLVM and finally to assembly.
+
+Numba IR:
+
+```{code-cell}
+:tags: ["scroll-output"]
+matrix_multiply_loops_jit.inspect_types(signature=matrix_multiply_loops_jit.signatures[0])
+```
+
+LLVM:
+
+```{code-cell}
+:tags: ["scroll-output"]
+print(matrix_multiply_loops_jit.inspect_llvm(signature=matrix_multiply_loops_jit.signatures[0]))
+```
+
+Assembly:
+
+```{code-cell}
+:tags: ["scroll-output"]
+matrix_multiply_loops_jit.inspect_asm(signature=matrix_multiply_loops_jit.signatures[0])
+```
+
+### Exercises
+
+1. Run an experiment where you increase the size of the square matrices passed
+   to `A@B` and `matrix_multiply_loops_jit` in a geometric sequence starting at
+   4 -- you should be able to go up to around 1024. Plot the results using
+   `matplotlib`. `%timeit -o` will place the
+
+```
+timing = %timeit -o C_loop = matrix_multiply_loops(A, B)
+print(timing.average)
+```
+
+2. For a fixed sized matrices of reasonable size, try passing combinations of
+   different orderings to `matrix_multiply_loops`. What do you observe?
