@@ -143,22 +143,31 @@ AMD MI300x - 153 billion transistors, 20000 stream processors.
 * A new generation of *just-in-time* compilers and automatic differentiation
   tools for Python code.
 
+:::{figure} numba.svg
+:align: center
+:width: 50%
+
+Numba
+:::
+
 :::{figure} jax.svg
 :align: center
 :width: 50%
+
+JAX by Google
 :::
 
 * Write the algorithm once, compile, get reasonable performance on CPUs, GPUs
-  and possible future hardware.
+  and possibly, future hardware.
 
 * Automatic differentiation can produce derivatives of 'arbitrary' computer
-  programs - distinct from symbolic differentiation tools.
+  programs. Useful in any place we need to compute derivatives of functions.
 
 * I will show on two very simple examples (matrix multiplication and maximum
   likelihood estimation) what is possible. 
 
-* Core tehcniques extend to complex neural network architectures, physics-based
-  modelling, numerical optimisation etc. 
+* Core techniques extend to high-dimensional examples, e.g. neural network
+  architectures, physics-based modelling, numerical optimisation etc. 
 
 * I hope to persuade you that these tools are both easy to use and useful, and
   should be in the toolbox of anyone doing research in numerical algorithms.

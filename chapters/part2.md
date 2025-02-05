@@ -72,8 +72,9 @@ Numpy will call the BLAS Level 3 GEMM routine when you call the high-level
 import numpy as np
 rng = np.random.default_rng()
 
-A = np.array(rng.random((256, 256)), order="C")
-B = np.array(rng.random((256, 256)), order="F")
+n = 128
+A = np.array(rng.random((n, n)), order="C")
+B = np.array(rng.random((n, n)), order="F")
 
 %timeit C_dot = np.dot(A, B)
 ```
