@@ -254,7 +254,7 @@ A few things to comment on here.
 
 First, JAX cannot transform functions that contain standard Python control flow
 operations such as `for`, `while` and `if`. As an alternative, JAX includes
-native control flow operations like the `jax.lax.scan`. Converting standard
+native control flow operations such as `jax.lax.scan`. Converting standard
 for, while and if-based algorithms to JAX control flow can be tricky; sometimes
 it is easiest to write outer algorithms like gradient descent in standard
 Python, calling into JAX transformed functions.

@@ -10,7 +10,8 @@ This section is given as a presentation.
 
 * Humans have to tell computers what to do - *programming*.
 
-* The earliest computers were programmed using punch cards.
+* The earliest computers were programmed using punch cards, an idea taken from
+  weaving looms.
 
 :::{figure} babbage.jpg
 By Charles Babbage - Upload by Mrjohncummings 2013-08-28 15:10, CC BY-SA 2.0,
@@ -110,7 +111,8 @@ foo:
   writing scientific software, e.g. Python + Numpy, Matlab.
 
 ```
-C = A*B
+C = A*B # Matlab
+C = A@B # Python + Numpy
 ```
 
 * Because these languages are often 'good enough', compiled languages no longer
@@ -122,18 +124,16 @@ C = A*B
   massively parallel hardware like GPUs and TPUs. 
 
 :::{figure} meluxina.jpg
+:align: center
+
 Meluxina, Bissen, Luxembourg.
 :::
   
-* AMD MI300x - 153 billion transistors, 20000 stream processors.
-
 :::{figure} amd.jpg
-AMD MI300x
+:align: center
+
+AMD MI300x - 153 billion transistors, 20000 stream processors.
 :::
-
-* Graphcore - 1400 cores, 8000 threads.
-
-* Apple M-series Neural Engine. 
 
 * Because of their massive parallelism standard programming models cannot take
   advantage of this hardware.
@@ -143,6 +143,11 @@ AMD MI300x
 * A new generation of *just-in-time* compilers and automatic differentiation
   tools for Python code.
 
+:::{figure} jax.svg
+:align: center
+:width: 50%
+:::
+
 * Write the algorithm once, compile, get reasonable performance on CPUs, GPUs
   and possible future hardware.
 
@@ -150,8 +155,10 @@ AMD MI300x
   programs - distinct from symbolic differentiation tools.
 
 * I will show on two very simple examples (matrix multiplication and maximum
-  likelihood estimate) what is possible.
+  likelihood estimation) what is possible. 
 
-* I hope to persuade you that these tools are not only easy, but useful -
-  saving time, energy and removing some of the frustrating aspects of numerical
-  programming. 
+* Core tehcniques extend to complex neural network architectures, physics-based
+  modelling, numerical optimisation etc. 
+
+* I hope to persuade you that these tools are both easy to use and useful, and
+  should be in the toolbox of anyone doing research in numerical algorithms.
