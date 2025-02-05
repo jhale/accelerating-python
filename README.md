@@ -37,18 +37,12 @@ By the end of the course, participants will:
   and JAX.  
 * Be able to optimize Python code using JIT compilation and GPU acceleration.
 
-**Topics Covered:**
+### Session 1: Introduction to Python acceleration tools 
 
 * Challenges in Python performance for computational tasks.  
 * Overview of Python acceleration tools:  
   * Numba for just-in-time (JIT) compilation.  
   * JAX for automatic differentiation and GPU/TPU acceleration.  
-* Brief comparison with other tools (e.g., Cython, PyPy).
-
-**Exercise:**
-
-* Benchmark a simple Python function (e.g., array sum, matrix multiplication)
-  to establish a performance baseline.
 
 ### Session 2: Acceleration with Numba
 
@@ -56,26 +50,15 @@ By the end of the course, participants will:
 
 * Basics of JIT compilation with Numba: `@jit` and `@njit`.  
 * Working with Numba-supported NumPy features.  
-* Performance tuning: threading, parallelism, and GPU support.
-
-**Hands-On Exercise:**
-
-* Optimize a computationally intensive Python function (e.g., Mandelbrot set
-  generation or numerical integration) using Numba.
 
 ### Session 3: Acceleration and differentiation with JAX
 
 **Topics Covered:**
 
-* Overview of JAX: automatic differentiation and XLA.  
+* Overview of JAX: automatic differentiation and JIT. 
 * Using `jax.numpy` as a drop-in replacement for NumPy.  
-* Vectorization and parallelism with `vmap` and `pmap`.  
+* Vectorization and parallelism with `vmap`.  
 * JIT compilation with `@jit` in JAX.
-
-**Exercise:**
-
-* Optimize a computationally intensive Python function (e.g., Mandelbrot set
-  generation or numerical integration) using JAX.
 
 ## Funding
 
