@@ -283,7 +283,7 @@ assumed to be drawn from a Poisson distribution with unknown rate parameter.
 The positive log-likelihood function is given by
 
 $$
-f(\lambda; x_1, \ldots, x_n) =  \sum{j = 1}^{n}[- \lambda - \log(x_j!) + x_j \log(gamma)]
+f(\lambda; x_1, \ldots, x_n) =  \sum{j = 1}^{n}[- \lambda - \log(x_j!) + x_j \log(\lambda)]
 $$
 
 where the term $\log(x_j!)$ should be approximated using the log-Gamma function: 
