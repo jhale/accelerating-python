@@ -143,13 +143,6 @@ AMD MI300x - 153 billion transistors, 20000 stream processors.
 * A new generation of *just-in-time* compilers and automatic differentiation
   tools for Python code.
 
-:::{figure} numba.svg
-:align: center
-:width: 50%
-
-Numba
-:::
-
 :::{figure} jax.svg
 :align: center
 :width: 50%
