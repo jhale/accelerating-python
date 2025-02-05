@@ -35,10 +35,10 @@ models.
 
 Assume we have a sequence of iid samples $x_1, \ldots, x_n$ of random variables
 assumed to be drawn from a normal distribution with unknown mean $\mu_0$ and
-unknown variance $\sigma_0^2$. The negative log-likelihood function is given by
+unknown variance $\sigma_0^2$. The log-likelihood function is given by
 
 $$
-f(\mu, \sigma^2; x_1, \ldots, x_n) =  \frac{n}{2} \ln(\sigma^2) + \frac{n}{2} \ln(2 \pi) + \frac{1}{2\sigma^2} \sum_{j = 1}^{n} (x_j - \mu)^2
+\ln \mathcal{L}(\mu, \sigma^2; x_1, \ldots, x_n) = -\frac{n}{2} \ln(\sigma^2) - \frac{n}{2} \ln(2 \pi) - \frac{1}{2\sigma^2} \sum_{j = 1}^{n} (x_j - \mu)^2
 $$
 
 Following standard arguments the maximum likelihood estimators of the mean and
@@ -280,10 +280,10 @@ problem.
 
 Assume we have a sequence of iid samples $x_1, \ldots, x_n$ of random variables
 assumed to be drawn from a Poisson distribution with unknown rate parameter.
-The positive log-likelihood function is given by
+The log-likelihood function is given by
 
 $$
-f(\lambda; x_1, \ldots, x_n) =  \sum_{j = 1}^{n}[- \lambda - \log(x_j!) + x_j \log(\lambda)]
+\ln \mathcal{L}(\lambda; x_1, \ldots, x_n) =  \sum_{j = 1}^{n}[- \lambda - \log(x_j!) + x_j \log(\lambda)]
 $$
 
 where the term $\log(x_j!)$ should be approximated using the log-Gamma function: 
