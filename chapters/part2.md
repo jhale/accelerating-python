@@ -304,11 +304,6 @@ print(f"f_fast: {f_fast(a, b, c)[0]:.12f}")
 My advice is to always develop code without `fastmath` and only turn it on
 after thoroughly testing for correctness and performance. 
 
-#### `parallel` mode
-
-Setting `@jit(parallel=True)` allows Numba to attempt the automatic
-parallelisation of functions.
-
 #### Advanced: Signatures and inspecting generated assembly
 
 When calling a function decorated with `@jit`, numba will inspect the arguments
@@ -373,6 +368,5 @@ for n in np.geomspace(...):
 
 ### References and further information
 
-- (The Numba documentation)[https://numba.pydata.org/numba-doc/dev/index.html]
-- (Extensions to CUDA)[https://tbetcke.github.io/hpc_lecture_notes/gpu_introduction.html]
-
+- [The Numba documentation](https://numba.pydata.org/numba-doc/dev/index.html)
+- [Extensions to CUDA](https://tbetcke.github.io/hpc_lecture_notes/gpu_introduction.html)
