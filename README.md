@@ -21,8 +21,7 @@ To install the required components for the tutorial:
     pip install jax
 
 The notebooks also run on [Google
-Colaboratory](https://colab.research.google.com) using the provided Tensor
-Processing Units (TPUs).
+Colaboratory](https://colab.research.google.com).
 
 ## Syllabus
 
