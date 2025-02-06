@@ -2,11 +2,21 @@
 
 ## Introduction
 
-This set of tutorials provides a brief introduction to methods for accelerating
-Python and is aimed at first year graduate students and PhDs. 
+This set of tutorials provides a brief introduction two packages, Numba and
+JAX, for accelerating Python. The purpose of the tutorial is to make students
+aware of the possibilities for achieving high performance and productivity in
+Python, without switching to an alternative compiled language.
+
+The rendered version of the book can be found
+[here](https://jhale.github.io/accelerating-python).
 
 This material was presented at the first MATHCODA Annual Training Workshop held
 in Luxembourg in early 2025.
+
+## Funding
+
+This research was funded in whole, or in part, by the Luxembourg National
+Research Fund (FNR), grant reference PRIDE/21/16747448/MATHCODA.
 
 ## Installation
 
@@ -34,7 +44,10 @@ By the end of the course, participants will:
 
 * Understand the strengths, use cases and technology behind tools like Numba
   and JAX.  
-* Be able to optimize Python code using JIT compilation and GPU acceleration.
+* Be able to optimize Python code using JIT compilation.
+* Understand the potential for using automatic differentiation in any area of
+  science where gradient-based algorithms are used for training, inference,
+  calibration, optimisation etc.
 
 ### Session 1: Introduction to Python acceleration tools 
 
@@ -45,21 +58,12 @@ By the end of the course, participants will:
 
 ### Session 2: Acceleration with Numba
 
-**Topics Covered:**
-
 * Basics of JIT compilation with Numba: `@jit` and `@njit`.  
 * Working with Numba-supported NumPy features.  
 
 ### Session 3: Acceleration and differentiation with JAX
 
-**Topics Covered:**
-
 * Overview of JAX: automatic differentiation and JIT. 
 * Using `jax.numpy` as a drop-in replacement for NumPy.  
 * Vectorization and parallelism with `vmap`.  
 * JIT compilation with `@jit` in JAX.
-
-## Funding
-
-This research was funded in whole, or in part, by the Luxembourg National
-Research Fund (FNR), grant reference PRIDE/21/16747448/MATHCODA.
