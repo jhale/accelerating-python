@@ -291,3 +291,5 @@ where the term $\log(x_j!)$ should be approximated using the log-Gamma function:
 $$
 \log(x_j!) = \log\Gamma (x_j + 1)
 $$
+
+It may be necessary to transform the rate parameter to be positive.
